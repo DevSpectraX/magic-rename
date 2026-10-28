@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magic Rename - Renombra archivos en masivo</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cream: '#FEF0CC',
+              darkblue: '#024059',
+              orange: '#F27405',
+              red: '#731702',
+              dark: '#260D0D'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-brand-cream text-brand-dark min-h-screen p-6">
+
+  <div class="max-w-6xl mx-auto space-y-6">
+    <!-- Header -->
+    <header class="text-center py-4">
+      <h1 class="text-4xl font-extrabold text-brand-darkblue">Magic Rename</h1>
+      <p class="text-brand-dark/70 mt-2 font-medium">Ordena tus archivos, aplica reglas y renómbralos al instante en tu navegador.</p>
+    </header>
+
+    <!-- Zona de Carga / Drag & Drop -->
+    <div id="drop-zone" class="border-2 border-dashed border-brand-darkblue/40 rounded-xl p-8 text-center bg-white/80 hover:bg-white transition cursor-pointer shadow-sm">
+      <input type="file" id="file-input" multiple class="hidden">
+      <p class="text-lg font-medium text-brand-darkblue">Arrastra tus archivos aquí o <span class="text-brand-orange font-bold underline">haz clic para buscar</span></p>
+      <p class="text-sm text-brand-dark/60 mt-1">100% Privado: Tus archivos jamás salen de tu ordenador</p>
+    </div>
+
+    <!-- Panel Principal (Opciones + Lista) -->
+    <div id="app-content" class="grid grid-cols-1 lg:grid-cols-3 gap-6 hidden">
+      
+      <!-- Columna Izquierda: Reglas de Renombrado -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-brand-darkblue/10 space-y-4 h-fit">
+        <h2 class="font-bold text-lg text-brand-darkblue border-b border-brand-cream pb-2">Reglas de Limpieza</h2>
+        
+        <div>
+          <label for="text-case" class="block text-sm font-medium mb-1 text-brand-darkblue">Formato de Texto</label>
+          <select id="text-case" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white text-brand-dark">
+            <option value="keep">Mantener original</option>
+            <option value="lower">todo minúsculas</option>
+            <option value="upper">TODO MAYÚSCULAS</option>
+            <option value="title">Primera Letra Mayúscula</option>
+          </select>
+        </div>
+
+        <div class="space-y-2">
+          <label class="flex items-center space-x-2 text-sm cursor-pointer select-none text-brand-dark">
+            <input type="checkbox" id="clean-accents" checked class="rounded text-brand-orange focus:ring-brand-orange">
+            <span>Quitar tildes, eñes y símbolos</span>
+          </label>
+          
+          <div>
+            <label for="space-replace" class="block text-sm font-medium mb-1 text-brand-darkblue">Reemplazar espacios por</label>
+            <select id="space-replace" class="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white text-brand-dark">
+              <option value="_">Guion bajo (_)</option>
+              <option value="-">Guion medio (-)</option>
+              <option value="">Eliminar espacios</option>
+              <option value="keep">Mantener espacios</option>
+            </select>
+          </div>
+        </div>
+
+        <h2 class="font-bold text-lg text-brand-darkblue border-b border-brand-cream pb-2 pt-2">Prefijos y Numeración</h2>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label for="prefix" class="block text-xs font-medium mb-1 text-brand-darkblue">Prefijo</label>
+            <input type="text" id="prefix" placeholder="ej: doc_" class="w-full border border-slate-300 rounded-lg p-2 text-sm text-brand-dark">
+          </div>
+          <div>
+            <label for="suffix" class="block text-xs font-medium mb-1 text-brand-darkblue">Sufijo</label>
+            <input type="text" id="suffix" placeholder="ej: _2026" class="w-full border border-slate-300 rounded-lg p-2 text-sm text-brand-dark">
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="flex items-center space-x-2 text-sm cursor-pointer select-none text-brand-dark">
+            <input type="checkbox" id="enable-num" checked class="rounded text-brand-orange focus:ring-brand-orange">
+            <span class="font-medium">Añadir numeración secuencial</span>
+          </label>
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div>
+              <label for="num-padding" class="block text-xs text-brand-dark/60 mb-1">Dígitos</label>
+              <select id="num-padding" class="w-full border border-slate-300 rounded-lg p-1.5 text-sm bg-white text-brand-dark">
+                <option value="2">01, 02...</option>
+                <option value="3" selected>001, 002...</option>
+                <option value="4">0001, 0002...</option>
+              </select>
+            </div>
+            <div>
+              <label for="num-pos" class="block text-xs text-brand-dark/60 mb-1">Posición</label>
+              <select id="num-pos" class="w-full border border-slate-300 rounded-lg p-1.5 text-sm bg-white text-brand-dark">
+                <option value="end">Al final</option>
+                <option value="start">Al principio</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="btn-download" class="w-full bg-brand-orange hover:bg-brand-red text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+          <span>📦 Descargar Todo (.ZIP)</span>
+        </button>
+      </div>
+
+      <!-- Columna Derecha: Lista de Archivos -->
+      <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow-sm border border-brand-darkblue/10">
+        <div class="flex justify-between items-center border-b border-brand-cream pb-3 mb-4">
+          <h2 class="font-bold text-lg text-brand-darkblue">Archivos Subidos (<span id="file-count">0</span>)</h2>
+          <span class="text-xs text-brand-dark/50">Arrastra las filas para cambiar el orden numérico</span>
+        </div>
+
+        <div id="file-list" class="space-y-2 min-h-[250px]"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Entrada principal de TypeScript gestionada directamente por Vite -->
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

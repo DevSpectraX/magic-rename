@@ -1,0 +1,26 @@
+# Dependencias
+/node_modules
+
+# Producción / Compilación
+/dist
+/dist-ssr
+
+# Logs de npm y Vite
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Archivos de caché del sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
